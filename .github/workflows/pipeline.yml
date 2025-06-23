@@ -25,14 +25,13 @@ jobs:
           node-version: '20'
       - run: npm ci
       - run: npm test
-# Passo para fazer o upload do log de debug caso ocorra uma falha
       - name: Upload npm debug log
-        if: failure()           # Apenas executa se o job falhar
+        if: failure()           
         uses: actions/upload-artifact@v4
         with:
           name: npm-debug-log
           path: /home/runner/.npm/_logs/
-		  
+
   publish-cd:
     needs: test-ci
     runs-on: ubuntu-latest
@@ -49,4 +48,10 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-	
+      # Passo para fazer o upload do log de debug caso ocorra uma falha
+      - name: Upload npm debug log
+        if: failure()           # Apenas executa se o job falhar
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-debug-log
+          path: /home/runner/.npm/_logs/	
