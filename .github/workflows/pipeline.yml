@@ -5,7 +5,16 @@ on:
     branches: [main]
   release:
     types: [published]
-
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Publicar no npm?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 jobs:
   test-ci:
     runs-on: ubuntu-latest
@@ -21,7 +30,8 @@ jobs:
     needs: test-ci
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'release'
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true')
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
